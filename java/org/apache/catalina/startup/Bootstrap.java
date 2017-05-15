@@ -65,7 +65,7 @@ public final class Bootstrap {
         // Will always be non-null
         String userDir = System.getProperty("user.dir");
 
-        // Home first
+        // Home first, 获取运行main函数指定参数Dcatalina.home的值
         String home = System.getProperty(Globals.CATALINA_HOME_PROP);
         File homeFile = null;
 
@@ -103,6 +103,7 @@ public final class Bootstrap {
             }
         }
 
+        // 获取catalina.properties文件
         catalinaHomeFile = homeFile;
         System.setProperty(
                 Globals.CATALINA_HOME_PROP, catalinaHomeFile.getPath());
@@ -143,12 +144,16 @@ public final class Bootstrap {
 
     private void initClassLoaders() {
         try {
+            // 创建类加载器 - 通过catalina.properties文件中的common.loader配置的值决定
             commonLoader = createClassLoader("common", null);
             if( commonLoader == null ) {
                 // no config file, default to this loader - we might be in a 'single' env.
                 commonLoader=this.getClass().getClassLoader();
             }
+            // 创建类加载器 - 通过catalina.properties文件中的server.loader配置的值决定
             catalinaLoader = createClassLoader("server", commonLoader);
+
+            // 创建类加载器 - 通过catalina.properties文件中的shared.loader配置的值决定
             sharedLoader = createClassLoader("shared", commonLoader);
         } catch (Throwable t) {
             handleThrowable(t);
@@ -253,6 +258,7 @@ public final class Bootstrap {
      */
     public void init() throws Exception {
 
+        // 初始化类加载器
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);

@@ -258,7 +258,7 @@ public final class Bootstrap {
      */
     public void init() throws Exception {
 
-        // 初始化类加载器
+        // 初始化类加载器  common.load, server.load, shared.load
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
@@ -285,6 +285,12 @@ public final class Bootstrap {
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
 
+        //Catalina catalina = new Catalina();
+        //catalina.setParentClassLoader(sharedLoader);
+
+        // 通过反射调用Catalina.setParentClassLoader()
+        // 由于Catalina.class文件不存在jdk自带的classLoader中
+        // 所以此处使用了反射
         catalinaDaemon = startupInstance;
 
     }
